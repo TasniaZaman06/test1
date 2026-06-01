@@ -14,6 +14,12 @@ class Car
   def details
     "This is a #{year} #{@make} #{@model}"
   end
+
+  # CONTROLLER CONTEXT
+  def show
+    # BAD: Direct string interpolation into SQL
+    @user = User.where("username = '#{params[:username]}'")
+  end
 end
 
 # Create an instance of the Car class

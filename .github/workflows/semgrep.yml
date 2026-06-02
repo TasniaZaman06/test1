@@ -1,0 +1,47 @@
+name: Semgrep PR Scan
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+
+    container:
+      image: semgrep/semgrep
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        run: |
+          semgrep scan \
+            --config=p/default \
+            --config=p/secrets \
+            --json \
+            --output=semgrep.json .
+
+      - name: Generate PR Comment
+        run: |
+          echo "## Semgrep Findings" > comment.md
+          echo "" >> comment.md
+
+          if [ "$(jq '.results | length' semgrep.json)" -eq 0 ]; then
+            echo "✅ No findings detected." >> comment.md
+          else
+            jq -r '
+              .results[] |
+              "- **Rule:** \(.check_id)\n  - File: \(.path)\n  - Message: \(.extra.message)\n"
+            ' semgrep.json >> comment.md
+          fi
+
+      - name: Post Comment to PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          path: comment.md

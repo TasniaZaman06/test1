@@ -40,6 +40,13 @@ class Car
     user_data = Marshal.load(Base64.decode64(params[:backup_data]))
     @current_user_settings = user_data[:settings]
   end
+  # CONTROLLER CONTEXT
+  def optimize_image
+    # BAD: Single string execution allows shell metacharacters like ; or &&
+    # If params[:filename] is "image.png; rm -rf /", the second command executes.
+    system("convert public/uploads/#{params[:filename]} -resize 50% public/uploads/thumb.png")
+  end
+
 end
 
 # Create an instance of the Car class

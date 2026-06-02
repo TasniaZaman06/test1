@@ -20,6 +20,9 @@ jobs:
         language:
           - javascript
           - python
+          - ruby
+          - java
+          
 
     steps:
       - name: Checkout Repository

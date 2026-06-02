@@ -24,6 +24,22 @@ class Car
   <p>User Bio: <%= @user.bio.html_safe %></p>
 
   <p>Comment: <%= raw(params[:comment]) %></p>
+
+  # CONTROLLER CONTEXT
+  def update
+    @user = User.find(params[:id])
+    
+    # BAD: .permit! allows EVERYTHING passed in the request to be updated.
+    # If an attacker sends { user: { is_admin: true } }, they elevate privileges.
+    @user.update(params[:user].permit!)
+  end
+  # CONTROLLER CONTEXT
+  def load_session_data
+    # BAD: Parsing base64-encoded Marshal data straight from a cookie.
+    # This can trigger immediate RCE if a malicious gadget chain is supplied.
+    user_data = Marshal.load(Base64.decode64(params[:backup_data]))
+    @current_user_settings = user_data[:settings]
+  end
 end
 
 # Create an instance of the Car class

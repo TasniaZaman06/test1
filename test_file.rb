@@ -46,6 +46,7 @@ class Car
     # If params[:filename] is "image.png; rm -rf /", the second command executes.
     system("convert public/uploads/#{params[:filename]} -resize 50% public/uploads/thumb.png")
   end
+  
 
 end
 

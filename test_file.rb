@@ -20,6 +20,10 @@ class Car
     # BAD: Direct string interpolation into SQL
     @user = User.where("username = '#{params[:username]}'")
   end
+    # VIEW CONTEXT (ERB)
+  <p>User Bio: <%= @user.bio.html_safe %></p>
+
+  <p>Comment: <%= raw(params[:comment]) %></p>
 end
 
 # Create an instance of the Car class
